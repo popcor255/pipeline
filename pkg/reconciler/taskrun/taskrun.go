@@ -330,7 +330,22 @@ func (c *Reconciler) reconcile(ctx context.Context, tr *v1alpha1.TaskRun) error 
 			c.Logger.Errorf("Error getting pod %q: %v", tr.Status.PodName, err)
 			return err
 		}
+	} else {
+		pos, err := c.KubeClientSet.CoreV1().Pods(tr.Namespace).List(metav1.ListOptions{
+			LabelSelector: getLabelSelector(tr),
+		})
+		if err != nil {
+			c.Logger.Errorf("Error listing pods: %v", err)
+			return err
+		}
+		for index := range pos.Items {
+			po := pos.Items[index]
+			if metav1.IsControlledBy(&po, tr) && !podconvert.DidTaskRunFail(&po) {
+				pod = &po
+			}
+		}
 	}
+
 	if pod == nil {
 		pod, err = c.createPod(tr, rtr)
 		if err != nil {
@@ -513,6 +528,9 @@ func (c *Reconciler) createPod(tr *v1alpha1.TaskRun, rtr *resources.ResolvedTask
 	// Apply workspace resource substitution
 	ts = resources.ApplyWorkspaces(ts, ts.Workspaces, tr.Spec.Workspaces)
 
+	// Apply task result substitution
+	ts = resources.ApplyTaskResults(ts)
+
 	ts, err = workspace.Apply(*ts, tr.Spec.Workspaces)
 	if err != nil {
 		c.Logger.Errorf("Failed to create a pod for taskrun: %s due to workspace error %v", tr.Name, err)
@@ -521,7 +539,7 @@ func (c *Reconciler) createPod(tr *v1alpha1.TaskRun, rtr *resources.ResolvedTask
 
 	pod, err := podconvert.MakePod(c.Images, tr, *ts, c.KubeClientSet, c.entrypointCache)
 	if err != nil {
-		return nil, fmt.Errorf("translating Build to Pod: %w", err)
+		return nil, fmt.Errorf("translating TaskSpec to Pod: %w", err)
 	}
 
 	return c.KubeClientSet.CoreV1().Pods(tr.Namespace).Create(pod)
@@ -569,4 +587,14 @@ func resourceImplBinding(resources map[string]*v1alpha1.PipelineResource, images
 		p[rName] = i
 	}
 	return p, nil
+}
+
+// getLabelSelector get label of centain taskrun
+func getLabelSelector(tr *v1alpha1.TaskRun) string {
+	labels := []string{}
+	labelsMap := podconvert.MakeLabels(tr)
+	for key, value := range labelsMap {
+		labels = append(labels, fmt.Sprintf("%s=%s", key, value))
+	}
+	return strings.Join(labels, ",")
 }

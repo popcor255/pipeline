@@ -23,6 +23,7 @@ import (
 	"time"
 
 	"github.com/tektoncd/pipeline/pkg/apis/pipeline/v1alpha1"
+	"github.com/tektoncd/pipeline/pkg/apis/pipeline/v1alpha2"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"knative.dev/pkg/apis"
@@ -47,12 +48,12 @@ func TestTaskRunRetry(t *testing.T) {
 			PipelineSpec: &v1alpha1.PipelineSpec{
 				Tasks: []v1alpha1.PipelineTask{{
 					Name: "retry-me",
-					TaskSpec: &v1alpha1.TaskSpec{
+					TaskSpec: &v1alpha1.TaskSpec{TaskSpec: v1alpha2.TaskSpec{
 						Steps: []v1alpha1.Step{{
 							Container: corev1.Container{Image: "busybox"},
 							Script:    "exit 1",
 						}},
-					},
+					}},
 					Retries: numRetries,
 				}},
 			},
@@ -112,17 +113,14 @@ func TestTaskRunRetry(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to list Pods: %v", err)
 	} else if len(pods.Items) != wantPods {
-		// TODO: Make this an error.
-		t.Logf("BUG: Found %d Pods, want %d", len(pods.Items), wantPods)
+		t.Errorf("BUG: Found %d Pods, want %d", len(pods.Items), wantPods)
 	}
 	for _, p := range pods.Items {
 		if _, found := podNames[p.Name]; !found {
-			// TODO: Make this an error.
-			t.Logf("BUG: TaskRunStatus.RetriesStatus did not report pod name %q", p.Name)
+			t.Errorf("BUG: TaskRunStatus.RetriesStatus did not report pod name %q", p.Name)
 		}
 		if p.Status.Phase != corev1.PodFailed {
-			// TODO: Make this an error.
-			t.Logf("BUG: Pod %q is not failed: %v", p.Name, p.Status.Phase)
+			t.Errorf("BUG: Pod %q is not failed: %v", p.Name, p.Status.Phase)
 		}
 	}
 }
