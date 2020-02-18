@@ -137,7 +137,7 @@ func TestTaskSpecValidate(t *testing.T) {
 			Steps: []v1alpha2.Step{{Container: corev1.Container{
 				Name:       "mystep",
 				Image:      "myimage",
-				Command:    []string{"$(param.foo-is-baz)"},
+				Command:    []string{"$(params.foo-is-baz)"},
 				Args:       []string{"$(params.baz)", "middle string", "$(params.foo-is-baz)"},
 				WorkingDir: "/foo/bar/src/",
 			}}},
@@ -432,7 +432,7 @@ func TestTaskSpecValidateError(t *testing.T) {
 			Steps: []v1alpha2.Step{{Container: corev1.Container{
 				Name:       "mystep",
 				Image:      "$(params.baz)",
-				Command:    []string{"$(param.foo-is-baz)"},
+				Command:    []string{"$(params.foo-is-baz)"},
 				Args:       []string{"$(params.baz)", "middle string", "url"},
 				WorkingDir: "/foo/bar/src/",
 			}}},
@@ -454,7 +454,7 @@ func TestTaskSpecValidateError(t *testing.T) {
 			Steps: []v1alpha2.Step{{Container: corev1.Container{
 				Name:       "mystep",
 				Image:      "someimage",
-				Command:    []string{"$(param.foo-is-baz)"},
+				Command:    []string{"$(params.foo-is-baz)"},
 				Args:       []string{"not isolated: $(params.baz)", "middle string", "url"},
 				WorkingDir: "/foo/bar/src/",
 			}}},
@@ -476,7 +476,7 @@ func TestTaskSpecValidateError(t *testing.T) {
 			Steps: []v1alpha2.Step{{Container: corev1.Container{
 				Name:       "mystep",
 				Image:      "someimage",
-				Command:    []string{"$(param.foo-is-baz)"},
+				Command:    []string{"$(params.foo-is-baz)"},
 				Args:       []string{"not isolated: $(params.baz)", "middle string", "url"},
 				WorkingDir: "/foo/bar/src/",
 			}}},
@@ -504,7 +504,7 @@ func TestTaskSpecValidateError(t *testing.T) {
 			Steps: []v1alpha2.Step{{Container: corev1.Container{
 				Name:       "mystep",
 				Image:      "someimage",
-				Command:    []string{"$(param.foo-is-baz)"},
+				Command:    []string{"$(params.foo-is-baz)"},
 				Args:       []string{"not isolated: $(params.baz)", "middle string", "url"},
 				WorkingDir: "/foo/bar/src/",
 			}}},
