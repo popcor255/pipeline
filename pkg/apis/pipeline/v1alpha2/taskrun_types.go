@@ -43,7 +43,7 @@ type TaskRunSpec struct {
 	// Used for cancelling a taskrun (and maybe more later on)
 	// +optional
 	Status TaskRunSpecStatus `json:"status,omitempty"`
-	// Time after which the build times out. Defaults to 10 minutes.
+	// Time after which the build times out. Defaults to 1 hour.
 	// Specified build timeout should be less than 24h.
 	// Refer Go's ParseDuration documentation for expected format: https://golang.org/pkg/time/#ParseDuration
 	// +optional
@@ -173,7 +173,7 @@ func (tr *TaskRunStatus) SetCondition(newCond *apis.Condition) {
 	}
 }
 
-// StepState reports the results of running a step in the Task.
+// StepState reports the results of running a step in a Task.
 type StepState struct {
 	corev1.ContainerState
 	Name          string `json:"name,omitempty"`
@@ -181,10 +181,12 @@ type StepState struct {
 	ImageID       string `json:"imageID,omitempty"`
 }
 
-// SidecarState reports the results of sidecar in the Task.
+// SidecarState reports the results of running a sidecar in a Task.
 type SidecarState struct {
-	Name    string `json:"name,omitempty"`
-	ImageID string `json:"imageID,omitempty"`
+	corev1.ContainerState
+	Name          string `json:"name,omitempty"`
+	ContainerName string `json:"container,omitempty"`
+	ImageID       string `json:"imageID,omitempty"`
 }
 
 // CloudEventDelivery is the target of a cloud event along with the state of

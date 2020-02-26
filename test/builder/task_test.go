@@ -163,6 +163,7 @@ func TestClusterTask(t *testing.T) {
 
 func TestTaskRunWithTaskRef(t *testing.T) {
 	var trueB = true
+	terminatedState := corev1.ContainerStateTerminated{Reason: "Completed"}
 
 	taskRun := tb.TaskRun("test-taskrun", "foo",
 		tb.TaskRunOwnerReference("PipelineRun", "test",
@@ -202,6 +203,12 @@ func TestTaskRunWithTaskRef(t *testing.T) {
 			tb.PodName("my-pod-name"),
 			tb.StatusCondition(apis.Condition{Type: apis.ConditionSucceeded}),
 			tb.StepState(tb.StateTerminated(127)),
+			tb.SidecarState(
+				tb.SidecarStateName("sidecar"),
+				tb.SidecarStateImageID("ImageID"),
+				tb.SidecarStateContainerName("ContainerName"),
+				tb.SetSidecarStateTerminated(terminatedState),
+			),
 		),
 	)
 	expectedTaskRun := &v1alpha1.TaskRun{
@@ -282,6 +289,16 @@ func TestTaskRunWithTaskRef(t *testing.T) {
 			},
 			TaskRunStatusFields: v1alpha1.TaskRunStatusFields{
 				PodName: "my-pod-name",
+				Sidecars: []v1alpha2.SidecarState{{
+					Name:          "sidecar",
+					ImageID:       "ImageID",
+					ContainerName: "ContainerName",
+					ContainerState: corev1.ContainerState{
+						Terminated: &corev1.ContainerStateTerminated{
+							Reason: "Completed",
+						},
+					},
+				}},
 				Steps: []v1alpha1.StepState{{ContainerState: corev1.ContainerState{
 					Terminated: &corev1.ContainerStateTerminated{ExitCode: 127},
 				}}},
