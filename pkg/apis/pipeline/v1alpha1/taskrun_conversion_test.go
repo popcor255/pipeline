@@ -22,7 +22,7 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/tektoncd/pipeline/pkg/apis/pipeline/v1alpha2"
+	"github.com/tektoncd/pipeline/pkg/apis/pipeline/v1beta1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"knative.dev/pkg/apis"
@@ -31,17 +31,17 @@ import (
 func TestTaskRunConversionBadType(t *testing.T) {
 	good, bad := &TaskRun{}, &Task{}
 
-	if err := good.ConvertUp(context.Background(), bad); err == nil {
-		t.Errorf("ConvertUp() = %#v, wanted error", bad)
+	if err := good.ConvertTo(context.Background(), bad); err == nil {
+		t.Errorf("ConvertTo() = %#v, wanted error", bad)
 	}
 
-	if err := good.ConvertDown(context.Background(), bad); err == nil {
-		t.Errorf("ConvertUp() = %#v, wanted error", bad)
+	if err := good.ConvertFrom(context.Background(), bad); err == nil {
+		t.Errorf("ConvertTo() = %#v, wanted error", bad)
 	}
 }
 
 func TestTaskRunConversion(t *testing.T) {
-	versions := []apis.Convertible{&v1alpha2.TaskRun{}}
+	versions := []apis.Convertible{&v1beta1.TaskRun{}}
 
 	tests := []struct {
 		name    string
@@ -71,20 +71,20 @@ func TestTaskRunConversion(t *testing.T) {
 				}},
 				Params: []Param{{
 					Name:  "p1",
-					Value: v1alpha2.ArrayOrString{StringVal: "baz"},
+					Value: v1beta1.ArrayOrString{StringVal: "baz"},
 				}},
-				Resources: &v1alpha2.TaskRunResources{
-					Inputs: []v1alpha2.TaskResourceBinding{{
-						PipelineResourceBinding: v1alpha2.PipelineResourceBinding{
+				Resources: &v1beta1.TaskRunResources{
+					Inputs: []v1beta1.TaskResourceBinding{{
+						PipelineResourceBinding: v1beta1.PipelineResourceBinding{
 							Name:        "i1",
-							ResourceRef: &v1alpha2.PipelineResourceRef{Name: "r1"},
+							ResourceRef: &v1beta1.PipelineResourceRef{Name: "r1"},
 						},
 						Paths: []string{"foo", "bar"},
 					}},
-					Outputs: []v1alpha2.TaskResourceBinding{{
-						PipelineResourceBinding: v1alpha2.PipelineResourceBinding{
+					Outputs: []v1beta1.TaskResourceBinding{{
+						PipelineResourceBinding: v1beta1.PipelineResourceBinding{
 							Name:        "o1",
-							ResourceRef: &v1alpha2.PipelineResourceRef{Name: "r2"},
+							ResourceRef: &v1beta1.PipelineResourceRef{Name: "r2"},
 						},
 					}},
 				},
@@ -109,8 +109,8 @@ func TestTaskRunConversion(t *testing.T) {
 				Generation: 1,
 			},
 			Spec: TaskRunSpec{
-				TaskSpec: &TaskSpec{TaskSpec: v1alpha2.TaskSpec{
-					Steps: []v1alpha2.Step{{Container: corev1.Container{
+				TaskSpec: &TaskSpec{TaskSpec: v1beta1.TaskSpec{
+					Steps: []v1beta1.Step{{Container: corev1.Container{
 						Image: "foo",
 					}}},
 				}},
@@ -126,20 +126,20 @@ func TestTaskRunConversion(t *testing.T) {
 				}},
 				Params: []Param{{
 					Name:  "p1",
-					Value: v1alpha2.ArrayOrString{StringVal: "baz"},
+					Value: v1beta1.ArrayOrString{StringVal: "baz"},
 				}},
-				Resources: &v1alpha2.TaskRunResources{
-					Inputs: []v1alpha2.TaskResourceBinding{{
-						PipelineResourceBinding: v1alpha2.PipelineResourceBinding{
+				Resources: &v1beta1.TaskRunResources{
+					Inputs: []v1beta1.TaskResourceBinding{{
+						PipelineResourceBinding: v1beta1.PipelineResourceBinding{
 							Name:        "i1",
-							ResourceRef: &v1alpha2.PipelineResourceRef{Name: "r1"},
+							ResourceRef: &v1beta1.PipelineResourceRef{Name: "r1"},
 						},
 						Paths: []string{"foo", "bar"},
 					}},
-					Outputs: []v1alpha2.TaskResourceBinding{{
-						PipelineResourceBinding: v1alpha2.PipelineResourceBinding{
+					Outputs: []v1beta1.TaskResourceBinding{{
+						PipelineResourceBinding: v1beta1.PipelineResourceBinding{
 							Name:        "o1",
-							ResourceRef: &v1alpha2.PipelineResourceRef{Name: "r2"},
+							ResourceRef: &v1beta1.PipelineResourceRef{Name: "r2"},
 						},
 					}},
 				},
@@ -154,8 +154,8 @@ func TestTaskRunConversion(t *testing.T) {
 				Generation: 1,
 			},
 			Spec: TaskRunSpec{
-				TaskSpec: &TaskSpec{TaskSpec: v1alpha2.TaskSpec{
-					Steps: []v1alpha2.Step{{Container: corev1.Container{
+				TaskSpec: &TaskSpec{TaskSpec: v1beta1.TaskSpec{
+					Steps: []v1beta1.Step{{Container: corev1.Container{
 						Image: "foo",
 					}}},
 				}},
@@ -171,12 +171,12 @@ func TestTaskRunConversion(t *testing.T) {
 				}},
 				Params: []Param{{
 					Name:  "p1",
-					Value: v1alpha2.ArrayOrString{StringVal: "baz"},
+					Value: v1beta1.ArrayOrString{StringVal: "baz"},
 				}},
 				Inputs: TaskRunInputs{
 					Params: []Param{{
 						Name:  "p2",
-						Value: v1alpha2.ArrayOrString{StringVal: "bar"}},
+						Value: v1beta1.ArrayOrString{StringVal: "bar"}},
 					},
 				},
 			},
@@ -191,8 +191,8 @@ func TestTaskRunConversion(t *testing.T) {
 				Generation: 1,
 			},
 			Spec: TaskRunSpec{
-				TaskSpec: &TaskSpec{TaskSpec: v1alpha2.TaskSpec{
-					Steps: []v1alpha2.Step{{Container: corev1.Container{
+				TaskSpec: &TaskSpec{TaskSpec: v1beta1.TaskSpec{
+					Steps: []v1beta1.Step{{Container: corev1.Container{
 						Image: "foo",
 					}}},
 				}},
@@ -206,11 +206,11 @@ func TestTaskRunConversion(t *testing.T) {
 					SubPath:  "foo",
 					EmptyDir: &corev1.EmptyDirVolumeSource{},
 				}},
-				Resources: &v1alpha2.TaskRunResources{
-					Inputs: []v1alpha2.TaskResourceBinding{{
-						PipelineResourceBinding: v1alpha2.PipelineResourceBinding{
+				Resources: &v1beta1.TaskRunResources{
+					Inputs: []v1beta1.TaskResourceBinding{{
+						PipelineResourceBinding: v1beta1.PipelineResourceBinding{
 							Name:        "i1",
-							ResourceRef: &v1alpha2.PipelineResourceRef{Name: "r1"},
+							ResourceRef: &v1beta1.PipelineResourceRef{Name: "r1"},
 						},
 						Paths: []string{"foo", "bar"},
 					}},
@@ -219,7 +219,7 @@ func TestTaskRunConversion(t *testing.T) {
 					Resources: []TaskResourceBinding{{
 						PipelineResourceBinding: PipelineResourceBinding{
 							Name:        "i1",
-							ResourceRef: &v1alpha2.PipelineResourceRef{Name: "r1"},
+							ResourceRef: &v1beta1.PipelineResourceRef{Name: "r1"},
 						},
 						Paths: []string{"foo", "bar"},
 					}},
@@ -236,8 +236,8 @@ func TestTaskRunConversion(t *testing.T) {
 				Generation: 1,
 			},
 			Spec: TaskRunSpec{
-				TaskSpec: &TaskSpec{TaskSpec: v1alpha2.TaskSpec{
-					Steps: []v1alpha2.Step{{Container: corev1.Container{
+				TaskSpec: &TaskSpec{TaskSpec: v1beta1.TaskSpec{
+					Steps: []v1beta1.Step{{Container: corev1.Container{
 						Image: "foo",
 					}}},
 				}},
@@ -251,11 +251,11 @@ func TestTaskRunConversion(t *testing.T) {
 					SubPath:  "foo",
 					EmptyDir: &corev1.EmptyDirVolumeSource{},
 				}},
-				Resources: &v1alpha2.TaskRunResources{
-					Outputs: []v1alpha2.TaskResourceBinding{{
-						PipelineResourceBinding: v1alpha2.PipelineResourceBinding{
+				Resources: &v1beta1.TaskRunResources{
+					Outputs: []v1beta1.TaskResourceBinding{{
+						PipelineResourceBinding: v1beta1.PipelineResourceBinding{
 							Name:        "o1",
-							ResourceRef: &v1alpha2.PipelineResourceRef{Name: "r1"},
+							ResourceRef: &v1beta1.PipelineResourceRef{Name: "r1"},
 						},
 						Paths: []string{"foo", "bar"},
 					}},
@@ -264,7 +264,7 @@ func TestTaskRunConversion(t *testing.T) {
 					Resources: []TaskResourceBinding{{
 						PipelineResourceBinding: PipelineResourceBinding{
 							Name:        "o1",
-							ResourceRef: &v1alpha2.PipelineResourceRef{Name: "r1"},
+							ResourceRef: &v1beta1.PipelineResourceRef{Name: "r1"},
 						},
 						Paths: []string{"foo", "bar"},
 					}},
@@ -278,18 +278,18 @@ func TestTaskRunConversion(t *testing.T) {
 		for _, version := range versions {
 			t.Run(test.name, func(t *testing.T) {
 				ver := version
-				if err := test.in.ConvertUp(context.Background(), ver); err != nil {
+				if err := test.in.ConvertTo(context.Background(), ver); err != nil {
 					if !test.wantErr {
-						t.Errorf("ConvertUp() = %v", err)
+						t.Errorf("ConvertTo() = %v", err)
 					}
 					return
 				}
-				t.Logf("ConvertUp() = %#v", ver)
+				t.Logf("ConvertTo() = %#v", ver)
 				got := &TaskRun{}
-				if err := got.ConvertDown(context.Background(), ver); err != nil {
-					t.Errorf("ConvertDown() = %v", err)
+				if err := got.ConvertFrom(context.Background(), ver); err != nil {
+					t.Errorf("ConvertFrom() = %v", err)
 				}
-				t.Logf("ConvertDown() = %#v", got)
+				t.Logf("ConvertFrom() = %#v", got)
 				if diff := cmp.Diff(test.in, got); diff != "" {
 					t.Errorf("roundtrip (-want, +got) = %v", diff)
 				}
@@ -299,7 +299,7 @@ func TestTaskRunConversion(t *testing.T) {
 }
 
 func TestTaskRunConversionFromDeprecated(t *testing.T) {
-	versions := []apis.Convertible{&v1alpha2.TaskRun{}}
+	versions := []apis.Convertible{&v1beta1.TaskRun{}}
 	tests := []struct {
 		name     string
 		in       *TaskRun
@@ -317,7 +317,7 @@ func TestTaskRunConversionFromDeprecated(t *testing.T) {
 				Inputs: TaskRunInputs{
 					Params: []Param{{
 						Name:  "p2",
-						Value: v1alpha2.ArrayOrString{StringVal: "bar"}},
+						Value: v1beta1.ArrayOrString{StringVal: "bar"}},
 					},
 				},
 			},
@@ -331,7 +331,7 @@ func TestTaskRunConversionFromDeprecated(t *testing.T) {
 			Spec: TaskRunSpec{
 				Params: []Param{{
 					Name:  "p2",
-					Value: v1alpha2.ArrayOrString{StringVal: "bar"}},
+					Value: v1beta1.ArrayOrString{StringVal: "bar"}},
 				},
 			},
 		},
@@ -348,7 +348,7 @@ func TestTaskRunConversionFromDeprecated(t *testing.T) {
 					Resources: []TaskResourceBinding{{
 						PipelineResourceBinding: PipelineResourceBinding{
 							Name:        "i1",
-							ResourceRef: &v1alpha2.PipelineResourceRef{Name: "r1"},
+							ResourceRef: &v1beta1.PipelineResourceRef{Name: "r1"},
 						},
 						Paths: []string{"foo", "bar"},
 					}},
@@ -362,11 +362,11 @@ func TestTaskRunConversionFromDeprecated(t *testing.T) {
 				Generation: 1,
 			},
 			Spec: TaskRunSpec{
-				Resources: &v1alpha2.TaskRunResources{
-					Inputs: []v1alpha2.TaskResourceBinding{{
-						PipelineResourceBinding: v1alpha2.PipelineResourceBinding{
+				Resources: &v1beta1.TaskRunResources{
+					Inputs: []v1beta1.TaskResourceBinding{{
+						PipelineResourceBinding: v1beta1.PipelineResourceBinding{
 							Name:        "i1",
-							ResourceRef: &v1alpha2.PipelineResourceRef{Name: "r1"},
+							ResourceRef: &v1beta1.PipelineResourceRef{Name: "r1"},
 						},
 						Paths: []string{"foo", "bar"},
 					}},
@@ -386,7 +386,7 @@ func TestTaskRunConversionFromDeprecated(t *testing.T) {
 					Resources: []TaskResourceBinding{{
 						PipelineResourceBinding: PipelineResourceBinding{
 							Name:        "o1",
-							ResourceRef: &v1alpha2.PipelineResourceRef{Name: "r1"},
+							ResourceRef: &v1beta1.PipelineResourceRef{Name: "r1"},
 						},
 						Paths: []string{"foo", "bar"},
 					}},
@@ -400,11 +400,11 @@ func TestTaskRunConversionFromDeprecated(t *testing.T) {
 				Generation: 1,
 			},
 			Spec: TaskRunSpec{
-				Resources: &v1alpha2.TaskRunResources{
-					Outputs: []v1alpha2.TaskResourceBinding{{
-						PipelineResourceBinding: v1alpha2.PipelineResourceBinding{
+				Resources: &v1beta1.TaskRunResources{
+					Outputs: []v1beta1.TaskResourceBinding{{
+						PipelineResourceBinding: v1beta1.PipelineResourceBinding{
 							Name:        "o1",
-							ResourceRef: &v1alpha2.PipelineResourceRef{Name: "r1"},
+							ResourceRef: &v1beta1.PipelineResourceRef{Name: "r1"},
 						},
 						Paths: []string{"foo", "bar"},
 					}},
@@ -416,21 +416,21 @@ func TestTaskRunConversionFromDeprecated(t *testing.T) {
 		for _, version := range versions {
 			t.Run(test.name, func(t *testing.T) {
 				ver := version
-				if err := test.in.ConvertUp(context.Background(), ver); err != nil {
+				if err := test.in.ConvertTo(context.Background(), ver); err != nil {
 					if test.badField != "" {
 						cce, ok := err.(*CannotConvertError)
 						if ok && cce.Field == test.badField {
 							return
 						}
 					}
-					t.Errorf("ConvertUp() = %v", err)
+					t.Errorf("ConvertTo() = %v", err)
 				}
-				t.Logf("ConvertUp() = %#v", ver)
+				t.Logf("ConvertTo() = %#v", ver)
 				got := &TaskRun{}
-				if err := got.ConvertDown(context.Background(), ver); err != nil {
-					t.Errorf("ConvertDown() = %v", err)
+				if err := got.ConvertFrom(context.Background(), ver); err != nil {
+					t.Errorf("ConvertFrom() = %v", err)
 				}
-				t.Logf("ConvertDown() = %#v", got)
+				t.Logf("ConvertFrom() = %#v", got)
 				if diff := cmp.Diff(test.want, got); diff != "" {
 					t.Errorf("roundtrip (-want, +got) = %v", diff)
 				}

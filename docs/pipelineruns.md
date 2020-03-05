@@ -80,7 +80,7 @@ spec:
         name: mytask
 ```
 
-[Here](../examples/pipelineruns/pipelinerun-with-pipelinespec.yaml) is a sample `PipelineRun` to display different
+[Here](../examples/v1beta1/pipelineruns/pipelinerun-with-pipelinespec.yaml) is a sample `PipelineRun` to display different
 greetings while embedding the spec of the `Pipeline` directly in the `PipelineRun`.
 
 
@@ -109,7 +109,7 @@ spec:
           ...
 ```
 
-[Here](../examples/pipelineruns/pipelinerun-with-pipelinespec-and-taskspec.yaml) is a sample `PipelineRun` with embedded
+[Here](../examples/v1beta1/pipelineruns/pipelinerun-with-pipelinespec-and-taskspec.yaml) is a sample `PipelineRun` with embedded
 the spec of the `Pipeline` directly in the `PipelineRun` along with the spec of the `Task` under `PipelineSpec`.
 
 
@@ -355,7 +355,7 @@ workspaces:
     secretName: my-secret
 ```
 
-_For a complete example see [workspace.yaml](../examples/pipelineruns/workspace.yaml)._
+_For a complete example see [workspace.yaml](../examples/v1beta1/pipelineruns/workspace.yaml)._
 
 ## Cancelling a PipelineRun
 
@@ -386,7 +386,7 @@ with a minimum set for container resource requests (i.e. CPU, memory, and epheme
 are attempting to run, Tekton will search through all LimitRanges present in the namespace and use the minimum 
 set for container resource requests instead of requesting 0.
 
-An example `PipelineRun` with a LimitRange is available [here](../examples/pipelineruns/no-ci/limitrange.yaml).
+An example `PipelineRun` with a LimitRange is available [here](../examples/v1beta1/pipelineruns/no-ci/limitrange.yaml).
 
 ---
 

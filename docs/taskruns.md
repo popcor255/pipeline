@@ -50,7 +50,7 @@ following fields:
   - [`serviceAccountName`](#service-account) - Specifies a `ServiceAccount` resource
     object that enables your build to run with the defined authentication
     information. When a `ServiceAccount` isn't specified, the `default-service-account`
-    specified in the configmap - config-defaults will be applied.
+    specified in the configmap `config-defaults` will be applied.
   - [`inputs`] - Specifies [input parameters](#input-parameters) and
     [input resources](#providing-resources)
   - [`outputs`] - Specifies [output resources](#providing-resources)
@@ -89,7 +89,7 @@ spec:
           type: git
     steps:
       - name: build-and-push
-        image: gcr.io/kaniko-project/executor:v0.15.0
+        image: gcr.io/kaniko-project/executor:v0.17.1
         # specifying DOCKER_CONFIG is required to allow kaniko to detect docker credential
         env:
           - name: "DOCKER_CONFIG"
@@ -471,7 +471,7 @@ spec:
           type: git
     steps:
       - name: build-and-push
-        image: gcr.io/kaniko-project/executor:v0.15.0
+        image: gcr.io/kaniko-project/executor:v0.17.1
         # specifying DOCKER_CONFIG is required to allow kaniko to detect docker credential
         env:
           - name: "DOCKER_CONFIG"
@@ -716,7 +716,7 @@ with a minimum set for container resource requests (i.e. CPU, memory, and epheme
 are attempting to run, Tekton will search through all LimitRanges present in the namespace and use the minimum 
 set for container resource requests instead of requesting 0.
 
-An example `TaskRun` with a LimitRange is available [here](../examples/taskruns/no-ci/limitrange.yaml).
+An example `TaskRun` with a LimitRange is available [here](../examples/v1beta1/taskruns/no-ci/limitrange.yaml).
 
 ---
 
