@@ -905,7 +905,7 @@ func TestTaskSpecValidateError(t *testing.T) {
 			Details: "Name must consist of alphanumeric characters, '-', '_', and must start and end with an alphanumeric character (e.g. 'MyName',  or 'my-name',  or 'my_name', regex used for validation is '^([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]$')",
 		},
 	}, {
-		name: "context  not validate",
+		name: "context not validate",
 		fields: fields{
 			Steps: []v1beta1.Step{{
 				Container: corev1.Container{

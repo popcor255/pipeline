@@ -38,6 +38,7 @@ func (t *Task) Validate(ctx context.Context) *apis.FieldError {
 	if err := validate.ObjectMetadata(t.GetObjectMeta()); err != nil {
 		return err.ViaField("metadata")
 	}
+
 	return t.Spec.Validate(ctx)
 }
 
@@ -404,7 +405,15 @@ func validateExpansion(ts *TaskSpec) *apis.FieldError {
 		return apiErr
 	}
 
-	input, err := toJSONInterfaceType(ts)
+	tsWithDefaultContext := struct {
+		*TaskSpec
+		context map[string]string
+	}{
+		ts,
+		map[string]string{},
+	}
+
+	input, err := json.MarshalIndent(tsWithDefaultContext, "", "  ")
 	if err != nil {
 		return apis.ErrGeneric(err.Error(), "spec")
 	}
@@ -413,11 +422,14 @@ func validateExpansion(ts *TaskSpec) *apis.FieldError {
 	if err != nil {
 		return apis.ErrGeneric(err.Error(), "spec")
 	}
+
 	return nil
 }
 
 func toJSONInterfaceType(v interface{}) (interface{}, error) {
+
 	b, err := json.Marshal(v)
+
 	if err != nil {
 		return nil, err
 	}
@@ -444,6 +456,12 @@ func createTaskContext(ts *TaskSpec) (interface{}, *apis.FieldError) {
 		return nil, apis.ErrGeneric(err.Error(), "workspaces")
 	}
 	context["workspaces"] = workspaces
+
+	name, err := ToGeneric("pipeline")
+	if err != nil {
+		return nil, apis.ErrGeneric(err.Error(), "name")
+	}
+	context["name"] = name
 
 	resources := map[string]interface{}{}
 
@@ -651,7 +669,7 @@ func createResultsContext(tsResults []TaskResult, params interface{}) (map[strin
 		return nil, err
 	}
 
-	for _, r := range iResults.(map[string]interface{}) {
+	for _, r := range iResults.([]interface{}) {
 		result := r.(map[string]interface{})
 		var name = result["name"].(string)
 		path := "/tekton/results/" + name
@@ -663,4 +681,9 @@ func createResultsContext(tsResults []TaskResult, params interface{}) (map[strin
 		}
 	}
 	return results, nil
+}
+
+func ToGeneric(a string) (out interface{}, err error) {
+	out = a
+	return out, nil
 }

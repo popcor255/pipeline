@@ -226,6 +226,7 @@ func Expand(input interface{}, context interface{}) (interface{}, error) {
 	case []interface{}:
 		return expandArray(t, context)
 	case map[string]interface{}:
+		fmt.Println("this case")
 		return expandObject(t, context)
 	default:
 		return input, nil

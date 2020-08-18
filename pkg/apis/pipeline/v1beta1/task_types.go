@@ -81,6 +81,11 @@ type TaskSpec struct {
 	// +optional
 	Description string `json:"description,omitempty"`
 
+	// Description is a user-facing description of the task that may be
+	// used to populate a UI.
+	// +optional
+	Context map[string]string `json:"context,omitempty"`
+
 	// Steps are the steps of the build; each step is run sequentially with the
 	// source mounted into /workspace.
 	Steps []Step `json:"steps,omitempty"`
