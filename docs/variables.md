@@ -8,6 +8,8 @@ weight: 15
 
 This page documents the variable substitutions supported by `Tasks` and `Pipelines`.
 
+**Note:** Tekton does not support shell-escaped parameters. As a task author you are responsible for escaping your own parameters.
+
 ## Variables available in a `Pipeline`
 
 | Variable | Description |
@@ -17,7 +19,7 @@ This page documents the variable substitutions supported by `Tasks` and `Pipelin
 | `context.pipelineRun.name` | The name of the `PipelineRun` that this `Pipeline` is running in. |
 | `context.pipelineRun.namespace` | The namespace of the `PipelineRun` that this `Pipeline` is running in. |
 | `context.pipelineRun.uid` | The uid of the `PipelineRun` that this `Pipeline` is running in. |
-| `context.pipeline.name` | The name of this `Pipeline` . |
+| `context.pipeline.name` | The name of this `Pipeline`. |
 
 
 ## Variables available in a `Task`
