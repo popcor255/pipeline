@@ -7,6 +7,7 @@ weight: 15
 # Variable Substitutions Supported by `Tasks` and `Pipelines`
 
 This page documents the variable substitutions supported by `Tasks` and `Pipelines`.
+**Note:** Tekton does not support shell-escaped parameters. As a task author you are responsible for escaping your own parameters.
 
 ## Variables available in a `Pipeline`
 
@@ -156,5 +157,5 @@ variable via `resources.inputs.<resourceName>.<variableName>` or
 | `Task` | `spec.sidecars[].volumemounts.mountpath` |
 | `Task` | `spec.sidecars[].volumemounts.subpath` |
 | `Pipeline` | `spec.tasks[].params[].value` |
-| `Pipeline` | `spec.tasks[].conditions[].params[].value` |
+| `Pipeline` | `spec.tasks[].conditions[].params[].value` | 
 | `Pipeline` | `spec.results[].value` |
